@@ -1,18 +1,19 @@
 using MediatR;
 using Todo.Domain.Repositories;
 using Todo.Domain.Entities;
+using Todo.Domain.Enums;
 
 namespace Todo.Application.Todos.Commands.CreateTodo;
 
 public class CreateTodoCommandHandler : IRequestHandler<CreateTodoCommand, Guid>                                                                                             
     {                                                                                                                                                                            
         private readonly ITodoRepository _todoRepository;                                                                                                                        
-                                                                                                                                                                                 
+                                                                                                                                                                                  
         public CreateTodoCommandHandler(ITodoRepository todoRepository)                                                                                                          
-        {                                                                                                                                                                        
+        {                             
             _todoRepository = todoRepository;                                                                                                                                    
         }                                                                                                                                                                        
-                                                                                                                                                                                 
+                                                                                                                                                                                  
         public async Task<Guid> Handle(CreateTodoCommand request, CancellationToken cancellationToken)                                                                           
         {                                                                                                                                                                        
             // 1. Instantiate the Domain Entity                                                                                                                                  
@@ -21,7 +22,8 @@ public class CreateTodoCommandHandler : IRequestHandler<CreateTodoCommand, Guid>
                 Id = Guid.NewGuid(),                                                                                                                                             
                 Title = request.Title,                                                                                                                                           
                 Description = request.Description,                                                                                                                               
-                Status = Domain.Enums.TodoStatus.Todo, // New items start as 'Todo'                                                                                              
+                Status = TodoStatus.Todo, // New items start as 'Todo'                                                                                              
+                Priority = request.Priority,
                 CreatedAt = DateTime.UtcNow,                                                                                                                                     
                 Deadline = request.Deadline                                                                                                                                      
             };                                                                                                                                                                   
