@@ -1,4 +1,6 @@
 using MediatR;
+using FluentValidation;
+using Todo.Application.Common.Behaviours;
 using Todo.Domain.Repositories;
 using Todo.Infrastructure;
 using Todo.Infrastructure.Data;
@@ -21,9 +23,25 @@ builder.Services.AddSingleton(new DbInitializer(connectionString));
 builder.Services.AddScoped<ITodoRepository>(sp => new TodoRepository(connectionString));
 
 // Register MediatR
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CreateTodoCommand).Assembly));
-
+builder.Services.AddValidatorsFromAssembly(typeof(CreateTodoCommand).Assembly);                                                                                              
+                                                                                                                                                                                 
+// 2. Register MediatR and add our custom Validation Behavior to its pipeline                                                                                                
+builder.Services.AddMediatR(cfg =>                                                                                                                                           
+{                                                                                                                                                                            
+    cfg.RegisterServicesFromAssembly(typeof(CreateTodoCommand).Assembly);                                                                                                    
+    cfg.AddBehavior(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));                                                                                            
+});                
 var app = builder.Build();
+
+// Register custom global exception handling middleware at the very start of the HTTP pipeline                                                                           
+app.UseMiddleware<Todo.Api.Middleware.ExceptionHandlingMiddleware>();                                                                                                        
+                                                                                                                                                                                 
+// Run Database Initializer on boot                                                                                                                                          
+using (var scope = app.Services.CreateScope())                                                                                                                               
+{                                                                                                                                                                            
+    var dbInitializer = scope.ServiceProvider.GetRequiredService<DbInitializer>();                                                                                           
+    dbInitializer.Initialize();                                                                                                                                              
+}               
 
 // Run Database Initializer on boot
 using (var scope = app.Services.CreateScope())
