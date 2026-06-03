@@ -7,8 +7,20 @@ using Todo.Application.Common.Behaviours;
 using Todo.Domain.Repositories;
 using Todo.Infrastructure.Data;
 using Todo.Application.Todos.Commands.CreateTodo;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Configure Serilog
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Warning)
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .WriteTo.File("logs/todo-log-.txt", rollingInterval: RollingInterval.Day)
+    .CreateLogger();
+
+builder.Host.UseSerilog();
 
 builder.Services.AddControllers();
 
@@ -57,6 +69,8 @@ app.UseCors("AllowAngularClient");
 // Register custom global exception handling middleware at the very start of the HTTP pipeline
 app.UseMiddleware<Todo.Api.Middleware.ExceptionHandlingMiddleware>();
 
+app.UseSerilogRequestLogging();
+
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -65,6 +79,9 @@ using (var scope = app.Services.CreateScope())
 {
     var dbInitializer = scope.ServiceProvider.GetRequiredService<DbInitializer>();
     dbInitializer.Initialize();
+
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    dbContext.Database.EnsureCreated();
 }
 
 // Configure the HTTP request pipeline.
@@ -80,4 +97,16 @@ app.MapIdentityApi<IdentityUser>();
 // Map Controller Routes automatically based on [Route] attributes
 app.MapControllers();
 
-app.Run();
+try
+{
+    Log.Information("Starting web application");
+    app.Run();
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Application terminated unexpectedly");
+}
+finally
+{
+    Log.CloseAndFlush();
+}
