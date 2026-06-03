@@ -1,0 +1,252 @@
+:host {
+    display: block;
+    min-height: 100vh;
+    background-color: #000000;
+    color: #ffffff;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    padding: 3rem 1rem;
+    box-sizing: border-box;
+}
+
+.todo-container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+header {
+    margin-bottom: 3rem;
+    text-align: left;
+}
+
+header h1 {
+    font-size: 2.2rem;
+    font-weight: 800;
+    letter-spacing: -0.06em;
+    margin: 0 0 0.5rem 0;
+    color: #ffffff;
+}
+
+header p {
+    color: #888888;
+    font-size: 0.95rem;
+    margin: 0;
+    letter-spacing: -0.01em;
+}
+
+/* VERCEL CARD / FORM STYLING */
+.todo-form {
+    background: #0a0a0a;
+    border: 1px solid #222222;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2.5rem;
+    transition: border-color 0.2s ease;
+}
+
+.todo-form:focus-within {
+    border-color: #444444;
+}
+
+.form-group {
+    margin-bottom: 1.25rem;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #888888;
+    margin-bottom: 0.5rem;
+}
+
+.todo-form input,
+.todo-form textarea,
+.todo-form select {
+    width: 100%;
+    padding: 0.75rem;
+    background: #000000;
+    border: 1px solid #222222;
+    border-radius: 6px;
+    color: #ffffff;
+    font-size: 0.9rem;
+    font-family: inherit;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
+}
+
+.todo-form input:focus,
+.todo-form textarea:focus,
+.todo-form select:focus {
+    outline: none;
+    border-color: #888888;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+/* VERCEL BUTTON: PURE WHITE BACK, PURE BLACK TEXT */
+.btn-submit {
+    width: 100%;
+    padding: 0.8rem;
+    background: #ffffff;
+    color: #000000;
+    border: 1px solid #ffffff;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+    margin-top: 0.5rem;
+}
+
+.btn-submit:hover {
+    background: #000000;
+    color: #ffffff;
+    border-color: #444444;
+}
+
+/* VERCEL TODO ITEM LIST */
+.todo-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.todo-item {
+    background: #0a0a0a;
+    border: 1px solid #222222;
+    border-radius: 8px;
+    padding: 1.25rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: border-color 0.2s;
+}
+
+.todo-item:hover {
+    border-color: #444444;
+}
+
+.todo-content h3 {
+    margin: 0 0 0.3rem 0;
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+}
+
+.todo-content p {
+    margin: 0 0 0.75rem 0;
+    color: #888888;
+    font-size: 0.88rem;
+    line-height: 1.4;
+}
+
+.todo-meta {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.badge {
+    font-size: 0.7rem;
+    font-weight: 500;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    border: 1px solid #222222;
+}
+
+/* Monochrome Muted Badges */
+.priority-low {
+    background: #000000;
+    color: #888888;
+    border-color: #222222;
+}
+
+.priority-medium {
+    background: #000000;
+    color: #eaeaea;
+    border-color: #333333;
+}
+
+.priority-high {
+    background: #000000;
+    color: #ff3366;
+    border-color: #ff3366;
+}
+
+/* Subtle      
+  Vercel Pink/Red Accent */
+
+.status {
+    background: #111111;
+    color: #888888;
+}
+
+.status-done h3 {
+    text-decoration: line-through;
+    color: #444444;
+}
+
+.status-done p {
+    color: #333333;
+}
+
+.status-select {
+    background: #111111;
+    border: 1px solid #222222;
+    color: #888888;
+    font-size: 0.7rem;
+    font-weight: 500;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: border-color 0.2s, color 0.2s;
+}
+
+.status-select:focus {
+    outline: none;
+    border-color: #888888;
+    color: #ffffff;
+}
+
+.status-select:hover {
+    border-color: #444444;
+    color: #ffffff;
+}
+
+/* VERCEL MINIMALIST ICON BUTTONS */
+.todo-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-icon {
+    background: #000000;
+    border: 1px solid #222222;
+    color: #888888;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.2s, color 0.2s;
+}
+
+.btn-icon:hover {
+    border-color: #888888;
+    color: #ffffff;
+}
+
+.btn-delete:hover {
+    border-color: #ff3366;
+    color: #ff3366;
+    background: rgba(255, 51, 102, 0.05);
+}

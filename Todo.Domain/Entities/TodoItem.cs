@@ -10,6 +10,6 @@ public class TodoItem
     public TodoPriority Priority { get; set; }
     public DateTime? Deadline { get; set; }
     public DateTime CreatedAt { get; set; }
-    public DateTime UpdatedAt { get; set; }
+    public DateTime? UpdatedAt { get; set; }
     
 }
