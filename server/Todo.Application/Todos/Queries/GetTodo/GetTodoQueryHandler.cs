@@ -1,6 +1,5 @@
 using MediatR;
 using Todo.Domain.Entities;
-using Todo.Domain.Enums;
 using Todo.Domain.Repositories;
 
 namespace Todo.Application.Todos.Queries.GetTodos;
@@ -16,7 +15,6 @@ public class GetTodoQueryHandler : IRequestHandler<GetTodosQuery, IReadOnlyList<
 
     public async Task<IReadOnlyList<TodoItem>> Handle(GetTodosQuery request, CancellationToken cancellationToken)
     {
-        return await _todoRepository.GetAllAsync(cancellationToken);
+        return await _todoRepository.GetAllAsync(request.UserId, cancellationToken);
     }
-    
 }

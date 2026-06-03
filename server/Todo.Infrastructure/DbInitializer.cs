@@ -62,8 +62,20 @@ public class DbInitializer
                         [Priority] INT NOT NULL DEFAULT 0,
                         [Deadline] DATETIME2 NULL,
                         [CreatedAt] DATETIME2 NOT NULL,
-                        [UpdatedAt] DATETIME2 NULL
+                        [UpdatedAt] DATETIME2 NULL,
+                        [UserId] NVARCHAR(450) NOT NULL DEFAULT ''
                     )
+                END
+                ELSE
+                BEGIN
+                    IF NOT EXISTS (
+                        SELECT * FROM sys.columns 
+                        WHERE object_id = OBJECT_ID(N'[dbo].[Todos]') 
+                        AND name = 'UserId'
+                    )
+                    BEGIN
+                        ALTER TABLE [dbo].[Todos] ADD [UserId] NVARCHAR(450) NOT NULL DEFAULT '';
+                    END
                 END";
 
             connection.Execute(createTableSql);

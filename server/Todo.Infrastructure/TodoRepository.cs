@@ -16,18 +16,18 @@ public class TodoRepository : ITodoRepository
 
     private SqlConnection GetConnection() => new SqlConnection(_connectionString);
 
-    public async Task<TodoItem?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<TodoItem?> GetByIdAsync(Guid id, string userId, CancellationToken cancellationToken = default)
     {
         using var connection = GetConnection();
-        const string sql = "SELECT * FROM Todos WHERE Id = @Id";
-        return await connection.QueryFirstOrDefaultAsync<TodoItem>(sql, new { Id = id });
+        const string sql = "SELECT * FROM Todos WHERE Id = @Id AND UserId = @UserId";
+        return await connection.QueryFirstOrDefaultAsync<TodoItem>(sql, new { Id = id, UserId = userId });
     }
 
-    public async Task<IReadOnlyList<TodoItem>> GetAllAsync(CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<TodoItem>> GetAllAsync(string userId, CancellationToken cancellationToken = default)
     {
         using var connection = GetConnection();
-        const string sql = "SELECT * FROM Todos";
-        var result = await connection.QueryAsync<TodoItem>(sql);
+        const string sql = "SELECT * FROM Todos WHERE UserId = @UserId";
+        var result = await connection.QueryAsync<TodoItem>(sql, new { UserId = userId });
         return result.ToList().AsReadOnly();
     }
 
@@ -35,8 +35,8 @@ public class TodoRepository : ITodoRepository
     {
         using var connection = GetConnection();
         const string sql = @"
-            INSERT INTO Todos (Id, Title, Description, Status, Priority, Deadline, CreatedAt, UpdatedAt)
-            VALUES (@Id, @Title, @Description, @Status, @Priority, @Deadline, @CreatedAt, @UpdatedAt)";
+            INSERT INTO Todos (Id, Title, Description, Status, Priority, Deadline, CreatedAt, UpdatedAt, UserId)
+            VALUES (@Id, @Title, @Description, @Status, @Priority, @Deadline, @CreatedAt, @UpdatedAt, @UserId)";
         await connection.ExecuteAsync(sql, item);
     }
 
@@ -51,14 +51,14 @@ public class TodoRepository : ITodoRepository
                 Priority = @Priority,
                 Deadline = @Deadline,
                 UpdatedAt = @UpdatedAt
-            WHERE Id = @Id";
+            WHERE Id = @Id AND UserId = @UserId";
         await connection.ExecuteAsync(sql, item);
     }
 
-    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task DeleteAsync(Guid id, string userId, CancellationToken cancellationToken = default)
     {
         using var connection = GetConnection();
-        const string sql = "DELETE FROM Todos WHERE Id = @Id";
-        await connection.ExecuteAsync(sql, new { Id = id });
+        const string sql = "DELETE FROM Todos WHERE Id = @Id AND UserId = @UserId";
+        await connection.ExecuteAsync(sql, new { Id = id, UserId = userId });
     }
 }
