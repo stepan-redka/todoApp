@@ -91,3 +91,30 @@
     margin: 0.5rem 0 1rem 0;
     text-align: center;
 }
+
+.success-text {
+    color: #00cc66;
+    font-size: 0.8rem;
+    margin: 0.5rem 0 1rem 0;
+    text-align: center;
+}
+
+.mode-toggle {
+    margin-top: 1.5rem;
+    text-align: center;
+}
+
+.btn-link {
+    background: none;
+    border: none;
+    color: #888888;
+    font-size: 0.8rem;
+    cursor: pointer;
+    text-decoration: underline;
+    font-family: inherit;
+    transition: color 0.2s;
+}
+
+.btn-link:hover {
+    color: #ffffff;
+}

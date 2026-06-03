@@ -77,11 +77,13 @@ app.UseAuthorization();
 // Run Database Initializer on boot
 using (var scope = app.Services.CreateScope())
 {
-    var dbInitializer = scope.ServiceProvider.GetRequiredService<DbInitializer>();
-    dbInitializer.Initialize();
-
+    // 1. Let EF Core create the database and Identity tables first
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     dbContext.Database.EnsureCreated();
+
+    // 2. Let Dapper check and create the Todos table second
+    var dbInitializer = scope.ServiceProvider.GetRequiredService<DbInitializer>();
+    dbInitializer.Initialize();
 }
 
 // Configure the HTTP request pipeline.

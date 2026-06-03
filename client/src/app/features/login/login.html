@@ -1,14 +1,14 @@
 <div class="login-container">
     <div class="login-card">
         <header>
-            <h2>Sign in to Todo</h2>
-            <p>Enter your credentials to access your workspace.</p>
+            <h2>{{ isLoginMode ? 'Sign in to Todo' : 'Create your account' }}</h2>
+            <p>{{ isLoginMode ? 'Enter your credentials to access your workspace.' : 'Sign up to get started with your private workspace.' }}</p>
         </header>
 
         <form (submit)="onSubmit(); $event.preventDefault()">
             <div class="form-group">
-                <label for="username">Username</label>
-                <input id="username" name="username" type="text" [(ngModel)]="username" placeholder="steve@jobs.com"
+                <label for="email">Email</label>
+                <input id="email" name="email" type="email" [(ngModel)]="email" placeholder="steve@jobs.com"
                     required />
             </div>
 
@@ -22,7 +22,19 @@
             <p class="error-text">{{ errorMessage }}</p>
             }
 
-            <button type="submit" class="btn-submit">Sign In</button>
+            @if (successMessage) {
+            <p class="success-text">{{ successMessage }}</p>
+            }
+
+            <button type="submit" class="btn-submit">
+                {{ isLoginMode ? 'Sign In' : 'Sign Up' }}
+            </button>
+
+            <div class="mode-toggle">
+                <button type="button" class="btn-link" (click)="toggleMode()">
+                    {{ isLoginMode ? "Don't have an account? Sign up" : 'Already have an account? Sign in' }}
+                </button>
+            </div>
         </form>
     </div>
 </div>
