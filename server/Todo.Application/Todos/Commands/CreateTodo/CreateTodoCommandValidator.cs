@@ -8,7 +8,7 @@ public class CreateTodoCommandValidator : AbstractValidator<CreateTodoCommand>
     {
         RuleFor(x => x.Title)
             .NotEmpty().WithMessage("Title is required")
-            .MaximumLength(200).WithMessage("Title must not exceed 200 characters");
+            .MaximumLength(50).WithMessage("Title must not exceed 200 characters");
         
         RuleFor(x => x.Description)
             .MaximumLength(1000).WithMessage("Description must not exceed 1000 characters");
@@ -17,8 +17,8 @@ public class CreateTodoCommandValidator : AbstractValidator<CreateTodoCommand>
             .IsInEnum().WithMessage("Priority must be one of the following: Low, Medium, High");
         
         RuleFor(x => x.Deadline)
-            .GreaterThan(DateTime.UtcNow)
+            .GreaterThanOrEqualTo(DateTime.UtcNow.Date.AddDays(-1))
             .When(x => x.Deadline.HasValue)
-            .WithMessage("Deadline must be greater than today");
+            .WithMessage("Deadline must be today or a future date");
     }
 }

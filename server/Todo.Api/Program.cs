@@ -66,10 +66,10 @@ var app = builder.Build();
 
 app.UseCors("AllowAngularClient");
 
+app.UseSerilogRequestLogging();
+
 // Register custom global exception handling middleware at the very start of the HTTP pipeline
 app.UseMiddleware<Todo.Api.Middleware.ExceptionHandlingMiddleware>();
-
-app.UseSerilogRequestLogging();
 
 app.UseAuthentication();
 app.UseAuthorization();
