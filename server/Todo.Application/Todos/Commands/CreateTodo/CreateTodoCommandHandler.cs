@@ -16,17 +16,17 @@ public class CreateTodoCommandHandler : IRequestHandler<CreateTodoCommand, Guid>
 
     public async Task<Guid> Handle(CreateTodoCommand request, CancellationToken cancellationToken)
     {
-        // 1. Instantiate the Domain Entity
+        // 1. Instantiate the Domain Entity with requested status
         var todoItem = new TodoItem
         {
             Id = Guid.NewGuid(),
             Title = request.Title,
             Description = request.Description,
-            Status = TodoStatus.Todo, // New items start as 'Todo'
+            Status = request.Status, // Scoped to requested column
             Priority = request.Priority,
             CreatedAt = DateTime.UtcNow,
             Deadline = request.Deadline,
-            UserId = request.UserId // Set ownership
+            UserId = request.UserId
         };
 
         // 2. Persist to DB using the Repository contract

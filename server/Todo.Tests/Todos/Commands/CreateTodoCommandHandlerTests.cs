@@ -15,7 +15,7 @@ public class CreateTodoCommandHandlerTests
         // Arrange
         var mockRepository = new Mock<ITodoRepository>();
         var handler = new CreateTodoCommandHandler(mockRepository.Object);
-        var command = new CreateTodoCommand("Scaffold testing", "Unit tests with Moq", TodoPriority.High, null, "user-123");
+        var command = new CreateTodoCommand("Scaffold testing", "Unit tests with Moq", TodoStatus.Todo, TodoPriority.High, null, "user-123");
 
         // Act
         var result = await handler.Handle(command, CancellationToken.None);
