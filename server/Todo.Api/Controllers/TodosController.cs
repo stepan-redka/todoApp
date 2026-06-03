@@ -44,7 +44,7 @@ public class TodosController : ControllerBase
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateTodoInput input)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
-        var command = new UpdateTodoCommand(id, input.Title, input.Description, input.Status, input.Priority, input.Deadline, userId);
+        var command = new UpdateTodoCommand(id, input.Title, input.Description, input.Status, input.Priority, input.Deadline, input.StartDate, userId);
         
         try
         {
@@ -74,5 +74,5 @@ public class TodosController : ControllerBase
         }
     }
 
-    public record UpdateTodoInput(string Title, string? Description, TodoStatus Status, TodoPriority Priority, DateTime? Deadline);
+    public record UpdateTodoInput(string Title, string? Description, TodoStatus Status, TodoPriority Priority, DateTime? Deadline, DateTime? StartDate = null);
 }

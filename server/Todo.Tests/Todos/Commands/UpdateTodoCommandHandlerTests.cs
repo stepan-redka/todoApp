@@ -31,7 +31,7 @@ public class UpdateTodoCommandHandlerTests
             .ReturnsAsync(originalTodo);
 
         var handler = new UpdateTodoCommandHandler(mockRepository.Object);
-        var command = new UpdateTodoCommand(todoId, "New Title", "New Desc", TodoStatus.InProgress, TodoPriority.Medium, null, userId);
+        var command = new UpdateTodoCommand(todoId, "New Title", "New Desc", TodoStatus.InProgress, TodoPriority.Medium, null, null, userId);
 
         // Act
         await handler.Handle(command, CancellationToken.None);
@@ -60,7 +60,7 @@ public class UpdateTodoCommandHandlerTests
             .ReturnsAsync((TodoItem?)null);
 
         var handler = new UpdateTodoCommandHandler(mockRepository.Object);
-        var command = new UpdateTodoCommand(todoId, "Hacked Title", null, TodoStatus.Done, TodoPriority.High, null, "hacker-id");
+        var command = new UpdateTodoCommand(todoId, "Hacked Title", null, TodoStatus.Done, TodoPriority.High, null, null, "hacker-id");
 
         // Act & Assert
         await Assert.ThrowsAsync<KeyNotFoundException>(() => handler.Handle(command, CancellationToken.None));

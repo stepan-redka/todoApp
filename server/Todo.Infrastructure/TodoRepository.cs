@@ -35,8 +35,8 @@ public class TodoRepository : ITodoRepository
     {
         using var connection = GetConnection();
         const string sql = @"
-            INSERT INTO Todos (Id, Title, Description, Status, Priority, Deadline, CreatedAt, UpdatedAt, UserId)
-            VALUES (@Id, @Title, @Description, @Status, @Priority, @Deadline, @CreatedAt, @UpdatedAt, @UserId)";
+            INSERT INTO Todos (Id, Title, Description, Status, Priority, Deadline, StartDate, CreatedAt, UpdatedAt, UserId)
+            VALUES (@Id, @Title, @Description, @Status, @Priority, @Deadline, @StartDate, @CreatedAt, @UpdatedAt, @UserId)";
         await connection.ExecuteAsync(sql, item);
     }
 
@@ -50,6 +50,7 @@ public class TodoRepository : ITodoRepository
                 Status = @Status,
                 Priority = @Priority,
                 Deadline = @Deadline,
+                StartDate = @StartDate,
                 UpdatedAt = @UpdatedAt
             WHERE Id = @Id AND UserId = @UserId";
         await connection.ExecuteAsync(sql, item);

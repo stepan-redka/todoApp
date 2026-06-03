@@ -10,5 +10,6 @@ public record UpdateTodoCommand(
     TodoStatus Status,
     TodoPriority Priority,
     DateTime? Deadline,
+    DateTime? StartDate = null,
     string UserId = ""
 ) : IRequest;

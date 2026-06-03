@@ -26,6 +26,7 @@ public class CreateTodoCommandHandler : IRequestHandler<CreateTodoCommand, Guid>
             Priority = request.Priority,
             CreatedAt = DateTime.UtcNow,
             Deadline = request.Deadline,
+            StartDate = request.StartDate,
             UserId = request.UserId
         };
 

@@ -11,6 +11,7 @@ public class TodoItem
     public DateTime? Deadline { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
+    public DateTime? StartDate { get; set; } // The start date of the task
     public string UserId { get; set; } = string.Empty;
     
 }

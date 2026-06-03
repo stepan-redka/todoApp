@@ -26,6 +26,7 @@ public class UpdateTodoCommandHandler : IRequestHandler<UpdateTodoCommand>
         todo.Status = request.Status;
         todo.Priority = request.Priority;
         todo.Deadline = request.Deadline;
+        todo.StartDate = request.StartDate;
         todo.UpdatedAt = DateTime.UtcNow;
 
         await _todoRepository.UpdateAsync(todo, cancellationToken);

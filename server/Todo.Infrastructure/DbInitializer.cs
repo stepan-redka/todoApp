@@ -63,7 +63,8 @@ public class DbInitializer
                         [Deadline] DATETIME2 NULL,
                         [CreatedAt] DATETIME2 NOT NULL,
                         [UpdatedAt] DATETIME2 NULL,
-                        [UserId] NVARCHAR(450) NOT NULL DEFAULT ''
+                        [UserId] NVARCHAR(450) NOT NULL DEFAULT '',
+                        [StartDate] DATETIME2 NULL
                     )
                 END
                 ELSE
@@ -75,6 +76,15 @@ public class DbInitializer
                     )
                     BEGIN
                         ALTER TABLE [dbo].[Todos] ADD [UserId] NVARCHAR(450) NOT NULL DEFAULT '';
+                    END
+
+                    IF NOT EXISTS (
+                        SELECT * FROM sys.columns 
+                        WHERE object_id = OBJECT_ID(N'[dbo].[Todos]') 
+                        AND name = 'StartDate'
+                    )
+                    BEGIN
+                        ALTER TABLE [dbo].[Todos] ADD [StartDate] DATETIME2 NULL;
                     END
                 END";
 
