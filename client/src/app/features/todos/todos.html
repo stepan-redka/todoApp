@@ -1,7 +1,8 @@
 <div class="todo-container">
   <header>
-    <h1>Todos</h1>
-    <p>A minimalist task manager following Vercel aesthetics.</p>
+    <a routerLink="/dashboard" class="btn-back">← Back to Dashboard</a>
+    <h1>Workspace</h1>
+    <p>Add, filter, and manage your active tasks.</p>
   </header>
 
   <!-- Input Form -->
@@ -54,7 +55,7 @@
             @else if (todo.priority === 2) { High }
           </span>
 
-          <!-- Vercel-Style Status Switcher Dropdown (New!) -->
+          <!-- Vercel-Style Status Switcher Dropdown -->
           <select class="status-select" [value]="todo.status" (change)="onStatusChange(todo, $event)">
             <option [value]="0">Todo</option>
             <option [value]="1">In Progress</option>
@@ -70,21 +71,14 @@
       <div class="todo-actions">
         <button class="btn-icon btn-delete" (click)="onDelete(todo.id)" title="Delete Task">
           <!-- Minimal SVG Trash Icon -->
-          <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3. 
-  org/2000/svg">
-            <path d="M5.5 1C5.22386 1 5 1.22386 5 1.5C5 1.77614 5.22386 2 5.5 2H9.5C9.77614 
-  2 10 1.77614 10 1.5C10 1.22386 9.77614 1 9.5 1H5.5ZM3 3.5C3 3.22386 3.22386 3 3.5 3H11.5C11.7761
-  3 12 3.22386 12 3.5C12 3.77614 11.7761 4 11.5 4H3.5C3.22386 4 3 3.77614 3 3.5ZM3.5 5C3.22386 5 3
-  5.22386 3 5.5V12C3 13.1046 3.89543 14 5 14H10C11.1046 14 12 13.1046 12 12V5.5C12 5.22386 11.7761
-  5 11.5 5C11.2239 5 11 5.22386 11 5.5V12C11 12.5523 10.5523 13 10 13H5C4.44772 13 4 12.5523 4    
-  12V5.5C4 5.22386 3.77614 5 3.5 5Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd" />
+          <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M5.5 1C5.22386 1 5 1.22386 5 1.5C5 1.77614 5.22386 2 5.5 2H9.5C9.77614 2 10 1.77614 10 1.5C10 1.22386 9.77614 1 9.5 1H5.5ZM3 3.5C3 3.22386 3.22386 3 3.5 3H11.5C11.7761 3 12 3.22386 12 3.5C12 3.77614 11.7761 4 11.5 4H3.5C3.22386 4 3 3.77614 3 3.5ZM3.5 5C3.22386 5 3 5.22386 3 5.5V12C3 13.1046 3.89543 14 5 14H10C11.1046 14 12 13.1046 12 12V5.5C12 5.22386 11.7761 5 11.5 5C11.2239 5 11 5.22386 11 5.5V12C11 12.5523 10.5523 13 10 13H5C4.44772 13 4 12.5523 4 12V5.5C4 5.22386 3.77614 5 3.5 5Z" fill="currentColor" fill-rule="evenodd" clip-rule="evenodd" />
           </svg>
         </button>
       </div>
     </div>
     } @empty {
-    <p style="text-align: center; color: #888888; font-size: 0.9rem;">No tasks created yet.
-    </p>
+    <p style="text-align: center; color: #888888; font-size: 0.9rem;">No tasks created yet.</p>
     }
   </main>
 </div>

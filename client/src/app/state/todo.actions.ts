@@ -1,5 +1,5 @@
 import { createActionGroup, emptyProps, props } from '@ngrx/store';
-import { TodoItem, TodoStatus, TodoPriority } from '../todo.model';
+import { TodoItem, TodoStatus, TodoPriority } from '../core/models/todo.model';
 
 // define all actions related to Todos in one grouped group                                                                  
 export const TodoActions = createActionGroup({

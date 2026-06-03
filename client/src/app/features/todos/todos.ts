@@ -1,18 +1,19 @@
 import { Component, OnInit, Signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { TodoItem, TodoStatus, TodoPriority } from './todo.model';
-import { TodoActions } from './state/todo.actions';
-import { selectAllTodos } from './state/todo.selectors';
+import { TodoItem, TodoStatus, TodoPriority } from '../../core/models/todo.model';
+import { TodoActions } from '../../state/todo.actions';
+import { selectAllTodos } from '../../state/todo.selectors';
 
 @Component({
-  selector: 'app-root',
-  imports: [FormsModule, DatePipe],
-  templateUrl: './app.html',
-  styleUrl: './app.css'
+  selector: 'app-todos',
+  imports: [FormsModule, DatePipe, RouterLink],
+  templateUrl: './todos.html',
+  styleUrl: './todos.css'
 })
-export class App implements OnInit {
+export class Todos implements OnInit {
   protected newTitle = '';
   protected newDescription = '';
   protected newPriority = TodoPriority.Medium;
@@ -31,7 +32,6 @@ export class App implements OnInit {
   protected onSubmit(): void {
     if (!this.newTitle.trim()) return;
 
-    // 7. Dispatch the 'Create' action                                                                                              
     this.store.dispatch(TodoActions.createTodo({
       title: this.newTitle,
       description: this.newDescription || undefined,
@@ -39,7 +39,6 @@ export class App implements OnInit {
       deadline: this.newDeadline || undefined
     }));
 
-    // Clear the form inputs                                                                                                        
     this.newTitle = '';
     this.newDescription = '';
     this.newPriority = TodoPriority.Medium;
@@ -47,7 +46,6 @@ export class App implements OnInit {
   }
 
   protected onDelete(id: string): void {
-    // 8. Dispatch the 'Delete' action                                                                                              
     this.store.dispatch(TodoActions.deleteTodo({ id }));
   }
 
@@ -64,4 +62,4 @@ export class App implements OnInit {
       deadline: todo.deadline
     }));
   }
-}                              
+}

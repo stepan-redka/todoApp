@@ -1,5 +1,5 @@
 import { createReducer, on } from '@ngrx/store';
-import { TodoItem } from '../todo.model';
+import { TodoItem } from '../core/models/todo.model';
 import { TodoActions } from './todo.actions';
 
 // 1. Define the shape of in-memory Todo Database                                                                               
