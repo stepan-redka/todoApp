@@ -31,8 +31,10 @@ export class TodoEffects {
                 this.todoService.createTodo({
                     title: action.title,
                     description: action.description,
+                    status: action.status,
                     priority: action.priority,
-                    deadline: action.deadline
+                    deadline: action.deadline,
+                    startDate: action.startDate
                 }).pipe(
                     map(() => TodoActions.createTodoSuccess()), // Success!                                                                   
                     catchError((error) => of(TodoActions.createTodoFailure({ error: error.message }))) // Failure!                            
@@ -80,7 +82,8 @@ export class TodoEffects {
                     description: action.description,
                     status: action.status,
                     priority: action.priority,
-                    deadline: action.deadline
+                    deadline: action.deadline,
+                    startDate: action.startDate
                 }).pipe(
                     map(() => TodoActions.updateTodoSuccess()),
                     catchError((error) => of(TodoActions.updateTodoFailure({ error: error.message })))

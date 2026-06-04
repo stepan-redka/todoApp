@@ -15,11 +15,11 @@ export class TodoService {
     return this.http.get<TodoItem[]>(this.apiUrl);
   }
 
-  createTodo(command: { title: string; description?: string; priority: TodoPriority; deadline?: string }): Observable<string> {
+  createTodo(command: { title: string; description?: string; status: TodoStatus; priority: TodoPriority; deadline?: string; startDate?: string }): Observable<string> {
     return this.http.post<string>(this.apiUrl, command);
   }
 
-  updateTodo(id: string, input: { title: string; description?: string; status: TodoStatus; priority: TodoPriority; deadline?: string }): Observable<void> {
+  updateTodo(id: string, input: { title: string; description?: string; status: TodoStatus; priority: TodoPriority; deadline?: string; startDate?: string }): Observable<void> {
     return this.http.put<void>(`${this.apiUrl}/${id}`, input);
   }
 

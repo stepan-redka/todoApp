@@ -17,6 +17,7 @@ export interface TodoItem {
   status: TodoStatus;
   priority: TodoPriority;
   deadline?: string;
+  startDate?: string;
   createdAt: string;
   updatedAt?: string;
 }

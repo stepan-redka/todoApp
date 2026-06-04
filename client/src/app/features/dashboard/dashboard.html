@@ -1,27 +1,428 @@
 <div class="dashboard-container">
-    <header>
-        <h1>Welcome back</h1>
-        <p>Here is an overview of your productivity today.</p>
+    <header class="dashboard-header">
+        <div>
+            <h1>TODO List</h1>
+            <p>Manage and track your tasks</p>
+        </div>
+        <div class="header-actions">
+            <button class="btn-theme-toggle" (click)="toggleTheme()"
+                [title]="isLightMode ? 'Switch to Dark Mode' : 'Switch to Light Mode'">
+                @if (isLightMode) {
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+                } @else {
+                <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+                }
+            </button>
+            <button class="btn-logout" (click)="onLogout()">Sign Out</button>
+        </div>
     </header>
 
-    <!-- Statistics Grid -->
-    <div class="stats-grid">
-        <div class="stat-card">
-            <span class="stat-label">Total Tasks</span>
-            <span class="stat-value">{{ getTotalCount() }}</span>
+
+    <!-- Filters Row -->
+    <div class="board-filters">
+        <div class="filter-group search-filter-group">
+            <input class="search-input" type="text" [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)"
+                placeholder="Search tasks..." />
         </div>
-        <div class="stat-card">
-            <span class="stat-label">In Progress</span>
-            <span class="stat-value">{{ getInProgressCount() }}</span>
+        <div class="filter-group">
+            <span class="filter-label">Priority:</span>
+            <button class="filter-btn" [class.active]="priorityFilter() === null"
+                (click)="setPriorityFilter(null)">All</button>
+            <button class="filter-btn" [class.active]="priorityFilter() === 0"
+                (click)="setPriorityFilter(0)">Low</button>
+            <button class="filter-btn" [class.active]="priorityFilter() === 1"
+                (click)="setPriorityFilter(1)">Medium</button>
+            <button class="filter-btn" [class.active]="priorityFilter() === 2"
+                (click)="setPriorityFilter(2)">High</button>
         </div>
-        <div class="stat-card">
-            <span class="stat-label">Completed</span>
-            <span class="stat-value">{{ getCompletedCount() }}</span>
+
+        <div class="filter-group">
+            <button class="filter-btn overdue-btn" [class.active]="showOnlyOverdue()" (click)="toggleOverdueFilter()">
+                Show Overdue Only
+            </button>
         </div>
     </div>
 
-    <!-- Workspace Link -->
-    <div class="dashboard-actions">
-        <a routerLink="/todos" class="btn-navigate">Enter Workspace →</a>
+    <!-- Kanban Board -->
+    <div class="kanban-board">
+        <!-- 1. TO DO COLUMN -->
+        <div class="kanban-column">
+            <div class="column-header">
+                <div class="header-left">
+                    <span class="column-title">To Do</span>
+                    <span class="column-counter status-todo">{{ todoTasks().length }}</span>
+                </div>
+                <button class="btn-add-task" (click)="openCreateModal(0)" title="Add task to To Do">+</button>
+            </div>
+
+            <div class="column-list">
+                @for (todo of todoTasks(); track todo.id) {
+                <div class="todo-card" (click)="openEditModal(todo)">
+                    <div class="card-header">
+                        <h3 class="card-title">{{ todo.title }}</h3>
+                        <span class="priority-badge" [class]="getPriorityClass(todo.priority)">
+                            {{ getPriorityLabel(todo.priority) }}
+                        </span>
+                    </div>
+                    @if (todo.description) {
+                    <p class="card-desc">{{ todo.description }}</p>
+                    }
+                    <div class="card-footer">
+                        <div class="card-meta">
+                            @if (todo.startDate || todo.deadline) {
+                            <span class="deadline-badge" title="Timeline range">
+                                <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2"
+                                    fill="none" stroke-linecap="round" stroke-linejoin="round"
+                                    style="margin-right: 4px; display: inline-block; vertical-align: -1px;">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                </svg>
+                                @if (todo.startDate) {
+                                {{ todo.startDate | date:'MMM d' }}
+                                } @else {
+                                -
+                                }
+                                →
+                                @if (todo.deadline) {
+                                {{ todo.deadline | date:'MMM d' }}
+                                } @else {
+                                -
+                                }
+                            </span>
+                            }
+                        </div>
+                        <div class="card-actions">
+                            @if (todo.status > 0) {
+                            <button class="btn-action"
+                                (click)="onStatusChange(todo, todo.status - 1); $event.stopPropagation()"
+                                title="Move Left">←</button>
+                            }
+                            @if (todo.status < 2) { <button class="btn-action"
+                                (click)="onStatusChange(todo, todo.status + 1); $event.stopPropagation()"
+                                title="Move Right">→</button>
+                                }
+                                <button class="btn-delete" (click)="onDelete(todo.id); $event.stopPropagation()"
+                                    title="Delete Task">
+                                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor"
+                                        stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="3 6 5 6 21 6"></polyline>
+                                        <path
+                                            d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                                        </path>
+                                    </svg>
+                                </button>
+                        </div>
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+
+        <!-- 2. IN PROGRESS COLUMN -->
+        <div class="kanban-column">
+            <div class="column-header">
+                <div class="header-left">
+                    <span class="column-title">In Progress</span>
+                    <span class="column-counter status-inprogress">{{ inProgressTasks().length }}</span>
+                </div>
+                <button class="btn-add-task" (click)="openCreateModal(1)" title="Add task to In Progress">+</button>
+            </div>
+
+            <div class="column-list">
+                @for (todo of inProgressTasks(); track todo.id) {
+                <div class="todo-card" (click)="openEditModal(todo)">
+                    <div class="card-header">
+                        <h3 class="card-title">{{ todo.title }}</h3>
+                        <span class="priority-badge" [class]="getPriorityClass(todo.priority)">
+                            {{ getPriorityLabel(todo.priority) }}
+                        </span>
+                    </div>
+                    @if (todo.description) {
+                    <p class="card-desc">{{ todo.description }}</p>
+                    }
+                    <div class="card-footer">
+                        <div class="card-meta">
+                            @if (todo.startDate || todo.deadline) {
+                            <span class="deadline-badge" title="Timeline range">
+                                <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2"
+                                    fill="none" stroke-linecap="round" stroke-linejoin="round"
+                                    style="margin-right: 4px; display: inline-block; vertical-align: -1px;">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                </svg>
+                                @if (todo.startDate) {
+                                {{ todo.startDate | date:'MMM d' }}
+                                } @else {
+                                -
+                                }
+                                →
+                                @if (todo.deadline) {
+                                {{ todo.deadline | date:'MMM d' }}
+                                } @else {
+                                -
+                                }
+                            </span>
+                            }
+                        </div>
+                        <div class="card-actions">
+                            @if (todo.status > 0) {
+                            <button class="btn-action"
+                                (click)="onStatusChange(todo, todo.status - 1); $event.stopPropagation()"
+                                title="Move Left">←</button>
+                            }
+                            @if (todo.status < 2) { <button class="btn-action"
+                                (click)="onStatusChange(todo, todo.status + 1); $event.stopPropagation()"
+                                title="Move Right">→</button>
+                                }
+                                <button class="btn-delete" (click)="onDelete(todo.id); $event.stopPropagation()"
+                                    title="Delete Task">
+                                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor"
+                                        stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="3 6 5 6 21 6"></polyline>
+                                        <path
+                                            d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                                        </path>
+                                    </svg>
+                                </button>
+                        </div>
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+
+        <!-- 3. DONE COLUMN -->
+        <div class="kanban-column">
+            <div class="column-header">
+                <div class="header-left">
+                    <span class="column-title">Done</span>
+                    <span class="column-counter status-done">{{ doneTasks().length }}</span>
+                </div>
+                <button class="btn-add-task" (click)="openCreateModal(2)" title="Add task to Done">+</button>
+            </div>
+
+            <div class="column-list">
+                @for (todo of doneTasks(); track todo.id) {
+                <div class="todo-card" (click)="openEditModal(todo)">
+                    <div class="card-header">
+                        <h3 class="card-title">{{ todo.title }}</h3>
+                        <span class="priority-badge" [class]="getPriorityClass(todo.priority)">
+                            {{ getPriorityLabel(todo.priority) }}
+                        </span>
+                    </div>
+                    @if (todo.description) {
+                    <p class="card-desc">{{ todo.description }}</p>
+                    }
+                    <div class="card-footer">
+                        <div class="card-meta">
+                            @if (todo.startDate || todo.deadline) {
+                            <span class="deadline-badge" title="Timeline range">
+                                <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="2"
+                                    fill="none" stroke-linecap="round" stroke-linejoin="round"
+                                    style="margin-right: 4px; display: inline-block; vertical-align: -1px;">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                </svg>
+                                @if (todo.startDate) {
+                                {{ todo.startDate | date:'MMM d' }}
+                                } @else {
+                                -
+                                }
+                                →
+                                @if (todo.deadline) {
+                                {{ todo.deadline | date:'MMM d' }}
+                                } @else {
+                                -
+                                }
+                            </span>
+                            }
+                        </div>
+                        <div class="card-actions">
+                            @if (todo.status > 0) {
+                            <button class="btn-action"
+                                (click)="onStatusChange(todo, todo.status - 1); $event.stopPropagation()"
+                                title="Move Left">←</button>
+                            }
+                            @if (todo.status < 2) { <button class="btn-action"
+                                (click)="onStatusChange(todo, todo.status + 1); $event.stopPropagation()"
+                                title="Move Right">→</button>
+                                }
+                                <button class="btn-delete" (click)="onDelete(todo.id); $event.stopPropagation()"
+                                    title="Delete Task">
+                                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor"
+                                        stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="3 6 5 6 21 6"></polyline>
+                                        <path
+                                            d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                                        </path>
+                                    </svg>
+                                </button>
+                        </div>
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
     </div>
+
+    <!-- Gantt Chart Timeline -->
+    <div class="gantt-section">
+        <header class="gantt-section-header">
+            <h2 class="gantt-title">Project Timeline</h2>
+            <div class="gantt-controls">
+                <button class="btn-gantt-nav" (click)="navigateTimeline(-1)" title="Previous Range">←</button>
+                <button class="btn-gantt-today" (click)="resetTimeline()" title="Go to Today">Today</button>
+                <span class="gantt-range-text">{{ timelineRangeLabel() }}</span>
+                <button class="btn-gantt-nav" (click)="navigateTimeline(1)" title="Next Range">→</button>
+
+                <div class="gantt-zoom-buttons"
+                    style="margin-left: 1rem; border-left: 1px solid var(--border-color); padding-left: 1rem; display: flex; gap: 0.25rem;">
+                    <button class="btn-zoom" [class.active]="timelineZoom() === 7" (click)="setZoom(7)"
+                        title="7 Days Zoom">7D</button>
+                    <button class="btn-zoom" [class.active]="timelineZoom() === 14" (click)="setZoom(14)"
+                        title="14 Days Zoom">14D</button>
+                    <button class="btn-zoom" [class.active]="timelineZoom() === 30" (click)="setZoom(30)"
+                        title="30 Days Zoom">30D</button>
+                </div>
+            </div>
+        </header>
+        <div class="gantt-chart">
+            <!-- Timeline Header -->
+            <div class="gantt-header-row">
+                <div class="gantt-label-col">Tasks</div>
+                <div class="gantt-days-grid"
+                    [style.grid-template-columns]="'repeat(' + timelineDays().length + ', 1fr)'">
+                    @for (day of timelineDays(); track day) {
+                    <div class="gantt-day-header" [class.today-col]="isToday(day)">
+                        <span class="day-num">{{ day | date:'d' }}</span>
+                        <span class="day-name">{{ day | date:'EEE' }}</span>
+                    </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Timeline Rows -->
+            <div class="gantt-rows">
+                @for (item of ganttTasks(); track item.todo.id) {
+                <div class="gantt-row">
+                    <div class="gantt-label-col" [title]="item.todo.title">
+                        <span class="priority-mini-badge" [class]="getPriorityClass(item.todo.priority)">
+                            {{ getPriorityLabel(item.todo.priority)[0] }}
+                        </span>
+                        <span class="gantt-task-title">{{ item.todo.title }}</span>
+                        <span class="gantt-task-status" [class]="item.statusClass"></span>
+                    </div>
+                    <div class="gantt-days-grid"
+                        [style.grid-template-columns]="'repeat(' + timelineDays().length + ', 1fr)'">
+                        <!-- Background grid lines for styling -->
+                        <div class="gantt-grid-lines"
+                            [style.grid-template-columns]="'repeat(' + timelineDays().length + ', 1fr)'">
+                            @for (day of timelineDays(); track day) {
+                            <div class="grid-line" [class.today-col]="isToday(day)"></div>
+                            }
+                        </div>
+
+                        <!-- Gantt Bar -->
+                        <div class="gantt-bar-wrapper" [style.grid-column]="item.colStart + ' / span ' + item.colSpan"
+                            (click)="openEditModal(item.todo)">
+                            <div class="gantt-bar" [class]="item.statusClass"
+                                [class.prio-high]="item.todo.priority === 2"
+                                [class.prio-medium]="item.todo.priority === 1"
+                                [class.prio-low]="item.todo.priority === 0">
+                                <span class="gantt-bar-title">{{ item.todo.title }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                }
+                @if (ganttTasks().length === 0) {
+                <div class="gantt-empty">
+                    No scheduled tasks in this period. Add Start Date or Deadline to view tasks on the timeline.
+                </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Task Modal -->
+    @if (showCreateModal) {
+    <div class="modal-overlay" (click)="closeCreateModal()">
+        <div class="modal-content" (click)="$event.stopPropagation()">
+            <header class="modal-header">
+                <h2>{{ editingTodoId ? 'Edit Task' : 'Add Task' }}</h2>
+                <button class="btn-close" (click)="closeCreateModal()">×</button>
+            </header>
+
+            <form (submit)="onFormSubmit(); $event.preventDefault()">
+                <div class="form-group">
+                    <label for="newTitle">Title</label>
+                    <input id="newTitle" name="newTitle" type="text" [(ngModel)]="newTitle"
+                        placeholder="e.g. Fix CORS configuration" maxlength="100" required />
+                    <span class="char-counter">{{ newTitle.length }}/100</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="newDescription">Description</label>
+                    <textarea id="newDescription" name="newDescription" [(ngModel)]="newDescription"
+                        placeholder="Optional details or notes..." maxlength="700"></textarea>
+                    <span class="char-counter">{{ (newDescription || '').length }}/700</span>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group full-width" style="width: 100%;">
+                        <label for="newPriority">Priority</label>
+                        <select id="newPriority" name="newPriority" [(ngModel)]="newPriority">
+                            <option [value]="0">Low</option>
+                            <option [value]="1">Medium</option>
+                            <option [value]="2">High</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group half-width">
+                        <label for="newStartDate">Start Date</label>
+                        <input id="newStartDate" name="newStartDate" type="date" [(ngModel)]="newStartDate" />
+                    </div>
+
+                    <div class="form-group half-width">
+                        <label for="newDeadline">Deadline</label>
+                        <input id="newDeadline" name="newDeadline" type="date" [(ngModel)]="newDeadline"
+                            min={{todayDateString}} />
+                    </div>
+                </div>
+
+                @if (errorMessage) {
+                <p class="error-text">{{ errorMessage }}</p>
+                }
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" (click)="closeCreateModal()">Cancel</button>
+                    <button type="submit" class="btn-primary">{{ editingTodoId ? 'Save Changes' : 'Create Task'
+                        }}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    }
 </div>

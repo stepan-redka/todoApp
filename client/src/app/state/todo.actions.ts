@@ -9,7 +9,7 @@ export const TodoActions = createActionGroup({
         'Load Todos Success': props<{ todos: TodoItem[] }>(),
         'Load Todos Failure': props<{ error: string }>(),
 
-        'Create Todo': props<{ title: string; description?: string; priority: number; deadline?: string }>(),
+        'Create Todo': props<{ title: string; description?: string; status: TodoStatus; priority: number; deadline?: string; startDate?: string }>(),
         'Create Todo Success': emptyProps(),
         'Create Todo Failure': props<{ error: string }>(),
 
@@ -19,7 +19,7 @@ export const TodoActions = createActionGroup({
 
         'Update Todo': props<{
             id: string; title: string; description?: string; status: TodoStatus; priority: TodoPriority; deadline?:
-            string
+            string; startDate?: string
         }>(),
         'Update Todo Success': emptyProps(),
         'Update Todo Failure': props<{ error: string }>(),
