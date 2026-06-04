@@ -1,12 +1,10 @@
 import { Component, OnInit, Signal, inject, computed, signal } from '@angular/core';
-import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 import { selectAllTodos } from '../../state/todo.selectors';
 import { TodoActions } from '../../state/todo.actions';
 import { TodoItem, TodoStatus, TodoPriority } from '../../core/models/todo.model';
-import { AuthService } from '../../core/services/auth.service';
 
 @Component({
     selector: 'app-dashboard',
@@ -183,8 +181,6 @@ export class Dashboard implements OnInit {
     protected errorMessage = '';
 
     private readonly store = inject(Store);
-    private readonly authService = inject(AuthService);
-    private readonly router = inject(Router);
 
     constructor() {
         this.todos = this.store.selectSignal(selectAllTodos);
@@ -218,11 +214,6 @@ export class Dashboard implements OnInit {
             document.documentElement.classList.remove('light-theme');
             localStorage.setItem('theme', 'dark');
         }
-    }
-
-    protected onLogout(): void {
-        this.authService.logout();
-        this.router.navigate(['/login']);
     }
 
     // Modal Actions

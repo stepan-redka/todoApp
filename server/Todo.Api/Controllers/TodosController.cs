@@ -1,7 +1,5 @@
-using System.Security.Claims;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
 using Todo.Application.Todos.Commands.CreateTodo;
 using Todo.Application.Todos.Commands.UpdateTodo;
 using Todo.Application.Todos.Commands.DeleteTodo;
@@ -10,12 +8,12 @@ using Todo.Domain.Enums;
 
 namespace Todo.Api.Controllers;
 
-[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class TodosController : ControllerBase
 {
     private readonly IMediator _mediator;
+    private const string DefaultUserId = "default-user";
 
     public TodosController(IMediator mediator)
     {
@@ -25,16 +23,14 @@ public class TodosController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
-        var result = await _mediator.Send(new GetTodosQuery(userId));
+        var result = await _mediator.Send(new GetTodosQuery(DefaultUserId));
         return Ok(result);
     }
 
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateTodoCommand command)
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
-        var commandWithUser = command with { UserId = userId };
+        var commandWithUser = command with { UserId = DefaultUserId };
         
         var id = await _mediator.Send(commandWithUser);
         return Ok(id);
@@ -43,8 +39,7 @@ public class TodosController : ControllerBase
     [HttpPut("{id:guid}")]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateTodoInput input)
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
-        var command = new UpdateTodoCommand(id, input.Title, input.Description, input.Status, input.Priority, input.Deadline, input.StartDate, userId);
+        var command = new UpdateTodoCommand(id, input.Title, input.Description, input.Status, input.Priority, input.Deadline, input.StartDate, DefaultUserId);
         
         try
         {
@@ -60,8 +55,7 @@ public class TodosController : ControllerBase
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id)
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty;
-        var command = new DeleteTodoCommand(id, userId);
+        var command = new DeleteTodoCommand(id, DefaultUserId);
         
         try
         {

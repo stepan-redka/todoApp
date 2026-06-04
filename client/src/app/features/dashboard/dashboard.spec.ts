@@ -1,8 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { Dashboard } from './dashboard';
 import { provideMockStore, MockStore } from '@ngrx/store/testing';
-import { Router } from '@angular/router';
-import { AuthService } from '../../core/services/auth.service';
 import { TodoItem, TodoStatus, TodoPriority } from '../../core/models/todo.model';
 import { selectAllTodos } from '../../state/todo.selectors';
 import { vi, describe, beforeEach, it, expect } from 'vitest';
@@ -43,21 +41,11 @@ describe('Dashboard Component', () => {
         }
     ];
 
-    const mockRouter = {
-        navigate: vi.fn()
-    };
-
-    const mockAuthService = {
-        logout: vi.fn()
-    };
-
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             imports: [Dashboard],
             providers: [
-                provideMockStore(),
-                { provide: Router, useValue: mockRouter },
-                { provide: AuthService, useValue: mockAuthService }
+                provideMockStore()
             ]
         }).compileComponents();
 

@@ -1,7 +1,5 @@
 using MediatR;
 using FluentValidation;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Todo.Infrastructure;
 using Todo.Application.Common.Behaviours;
 using Todo.Domain.Repositories;
@@ -30,14 +28,6 @@ builder.Services.AddSwaggerGen();
 // Register DB connection & repo
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(connectionString));
-
-// Add Authorization & Identity Endpoints
-builder.Services.AddAuthorization();
-builder.Services.AddIdentityApiEndpoints<IdentityUser>()
-    .AddEntityFrameworkStores<AppDbContext>();
 
 builder.Services.AddSingleton(new DbInitializer(connectionString));
 builder.Services.AddScoped<ITodoRepository>(sp => new TodoRepository(connectionString));
@@ -71,17 +61,9 @@ app.UseSerilogRequestLogging();
 // Register custom global exception handling middleware at the very start of the HTTP pipeline
 app.UseMiddleware<Todo.Api.Middleware.ExceptionHandlingMiddleware>();
 
-app.UseAuthentication();
-app.UseAuthorization();
-
 // Run Database Initializer on boot
 using (var scope = app.Services.CreateScope())
 {
-    // 1. Let EF Core create the database and Identity tables first
-    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    dbContext.Database.EnsureCreated();
-
-    // 2. Let Dapper check and create the Todos table second
     var dbInitializer = scope.ServiceProvider.GetRequiredService<DbInitializer>();
     dbInitializer.Initialize();
 }
@@ -94,7 +76,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.MapIdentityApi<IdentityUser>();
 
 // Map Controller Routes automatically based on [Route] attributes
 app.MapControllers();
